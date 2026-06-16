@@ -1,0 +1,16 @@
+{
+  "name": "geosafe-flutter-wc-interop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Builds the WalletConnect/Reown AppKit JS interop bundle (window.GeoSafeWC) that the Flutter web target drives via dart:js_interop. Output (../wc_interop.js) is generated — not committed.",
+  "scripts": {
+    "build": "esbuild wc_interop.src.js --bundle --format=iife --outfile=../wc_interop.js --platform=browser"
+  },
+  "dependencies": {
+    "@reown/appkit": "1.8.18",
+    "@reown/appkit-adapter-ethers": "1.8.18"
+  },
+  "devDependencies": {
+    "esbuild": "0.27.2"
+  }
+}
