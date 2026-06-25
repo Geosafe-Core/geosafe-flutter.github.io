@@ -268,7 +268,10 @@ const api = {
       await ensureChain(wp, cfg.defaultChainId);
       const postChain = await walletChainId(wp);
       L('walletChain(post)', { postChain });
-      const tx = { from, to, data, value };
+      // '0x' is not a valid quantity for `value` — wallets reject it
+      // ("invalid transaction value"). Normalize empty/'0x' to '0x0'.
+      const txValue = (!value || value === '0x') ? '0x0' : value;
+      const tx = { from, to, data, value: txValue };
       if (gas) tx.gas = gas;
       stage = 'eth_sendTransaction';
       L('sending tx', tx);
