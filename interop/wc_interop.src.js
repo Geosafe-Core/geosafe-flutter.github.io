@@ -230,6 +230,12 @@ const api = {
       }
       if (!address) address = currentAddress();
       if (!address) throw new Error('Wallet connected but no address returned.');
+      // Explicitly dismiss the AppKit modal. It does NOT reliably self-close
+      // here: the post-connect wallet_requestPermissions / eth_requestAccounts
+      // dance above leaves the modal stuck on its "connecting" spinner, so the
+      // user is left staring at a loading popup after authorizing. Closing it
+      // ourselves is the only dependable dismissal.
+      try { await appKit.close(); } catch (_) { /* already closed — ignore */ }
       emitState();
       return JSON.stringify({ ok: true, address, chainId: currentChainId() });
     } catch (e) {
