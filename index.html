@@ -20,6 +20,14 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
 
+  <!-- Keep the HTML entry itself uncached so a redeploy is picked up; the
+       versioned flutter_bootstrap.js?v=d9a62484?v=… + main.dart.js?v=… it references then
+       force-fetch the new build (we run --pwa-strategy=none, so there is no
+       service worker to do this for us). -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -32,15 +40,12 @@
   <title>GeoSafe</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Google Maps JS API (required by google_maps_flutter_web) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY_PLACEHOLDER"></script>
-
   <!-- WalletConnect interop: bundles @reown/appkit (the JS AppKit the web app
        uses) and exposes window.GeoSafeWC, driven by the Dart web target. Built
        from geosafe-web/app/client/wc_interop.src.js via esbuild. -->
   <script src="wc_interop.js"></script>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <script src="flutter_bootstrap.js?v=d9a62484" async></script>
 </body>
 </html>
