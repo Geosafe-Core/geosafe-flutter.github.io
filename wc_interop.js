@@ -210922,7 +210922,7 @@ ${(0, stateOverride_js_1.prettyStateOverride)(stateOverride)}`;
     // side gets a readable message instead of an opaque boxed JS error object.
     //   success: {"ok":true, "address":..., "chainId":...}
     //   failure: {"ok":false, "error":"<message>", "code":"<code>"}
-    async connect() {
+    async connect(targetChainId) {
       try {
         await ensureInit();
         await ensureConnected();
@@ -210946,6 +210946,13 @@ ${(0, stateOverride_js_1.prettyStateOverride)(stateOverride)}`;
             const accts = await wp.request({ method: "eth_requestAccounts", params: [] });
             if (Array.isArray(accts) && accts.length) address = accts[0];
           } catch (_7) {
+          }
+          const target = Number(targetChainId);
+          if (Number.isFinite(target) && target > 0) {
+            try {
+              await ensureChain(wp, target);
+            } catch (_7) {
+            }
           }
         }
         if (!address) address = currentAddress();

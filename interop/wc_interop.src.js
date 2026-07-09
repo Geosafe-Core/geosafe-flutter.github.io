@@ -193,7 +193,7 @@ const api = {
   // side gets a readable message instead of an opaque boxed JS error object.
   //   success: {"ok":true, "address":..., "chainId":...}
   //   failure: {"ok":false, "error":"<message>", "code":"<code>"}
-  async connect() {
+  async connect(targetChainId) {
     try {
       await ensureInit();
       await ensureConnected();
@@ -227,6 +227,18 @@ const api = {
           const accts = await wp.request({ method: 'eth_requestAccounts', params: [] });
           if (Array.isArray(accts) && accts.length) address = accts[0];
         } catch (_) { /* fall back to AppKit's address below */ }
+        // Network-first onboarding: put the wallet on the chain the user
+        // selected BEFORE we hand a session back to Dart. Otherwise the UI's
+        // chain-match gate tears this session down and forces a SECOND
+        // connect() → a SECOND wallet_requestPermissions account prompt (the
+        // "asks for permissions twice" bug). A switch is at most ONE lightweight
+        // network prompt, and none at all when the wallet is already on-chain.
+        // A rejected/failed switch is non-fatal — we return the wallet's real
+        // chainId and let the gate handle the (now rare) mismatch.
+        const target = Number(targetChainId);
+        if (Number.isFinite(target) && target > 0) {
+          try { await ensureChain(wp, target); } catch (_) { /* stay on current chain */ }
+        }
       }
       if (!address) address = currentAddress();
       if (!address) throw new Error('Wallet connected but no address returned.');
