@@ -211048,6 +211048,31 @@ ${(0, stateOverride_js_1.prettyStateOverride)(stateOverride)}`;
         });
       }
     },
+    // EIP-747 wallet_watchAsset — ask the wallet to display an ERC20 (a shadow
+    // token, so the user sees their vault as a normal balance).
+    //
+    // Envelope: {"ok":true,"added":bool} or {"ok":false,"error":...,"code":...}.
+    // Note the params shape: EIP-747 passes an OBJECT, not the array every other
+    // JSON-RPC method takes. MetaMask rejects the array form outright.
+    //
+    // A rejection ("no thanks") and an unsupported method are the SAME
+    // non-outcome as far as the app is concerned — both come back ok:false and
+    // nothing about the shadow stops working. Never throw here.
+    async watchAsset(address, symbol, decimals) {
+      try {
+        await ensureInit();
+        await ensureConnected();
+        const wp = appKit.getWalletProvider();
+        if (!wp) return JSON.stringify({ ok: false, error: "Wallet provider unavailable." });
+        const added = await wp.request({
+          method: "wallet_watchAsset",
+          params: { type: "ERC20", options: { address, symbol, decimals: Number(decimals) } }
+        });
+        return JSON.stringify({ ok: true, added: added !== false });
+      } catch (e13) {
+        return JSON.stringify({ ok: false, error: errMsg(e13), code: String(e13 && e13.code || "") });
+      }
+    },
     async disconnect() {
       if (appKit) {
         try {

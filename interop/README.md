@@ -1,12 +1,11 @@
 # WalletConnect interop bundle
 
 `wc_interop.src.js` is the hand-written source for the Flutter web app's
-WalletConnect glue. It bundles [`@reown/appkit`](https://reown.com) (the same JS
-AppKit the React app uses) and exposes a small imperative API on
-`window.GeoSafeWC` that the Dart web target drives via `dart:js_interop`. This
-gives the Flutter **web** build the exact modal / connect / QR / extension
-behaviour of the React app; the Dart `reown_appkit` SDK is only used on the
-mobile builds.
+WalletConnect glue. It bundles [`@reown/appkit`](https://reown.com) and exposes
+a small imperative API on `window.GeoSafeWC` that the Dart web target drives via
+`dart:js_interop`. This gives the Flutter **web** build the JS AppKit's modal /
+connect / QR / extension behaviour; the Dart `reown_appkit` SDK is only used on
+the mobile builds.
 
 ## Build
 

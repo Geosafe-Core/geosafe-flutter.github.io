@@ -1,0 +1,22 @@
+{
+  "_comment": [
+    "Release notes for Settings → About → App version & updates (GSM-144).",
+    "A committed asset, not a fetch: GeoSafe is a pure client with no backend,",
+    "and a changelog that needs a server cannot be read offline.",
+    "",
+    "Schema — releases MUST be ordered newest first:",
+    "  version : the pubspec version WITHOUT the build number (e.g. 1.0.15).",
+    "            The entry whose version matches the running build is labelled",
+    "            'Current' by the screen; do not hard-code that here.",
+    "  date    : optional display date, e.g. '10 JAN 2026'. Omit if unknown —",
+    "            an invented date is worse than no date.",
+    "  sections: [{ heading, body }] — the ticket asks for new features, bug",
+    "            fixes and security updates as separate headings.",
+    "",
+    "NOTE: no release notes have been written for any shipped GeoSafe build.",
+    "The list below is intentionally empty rather than filled with invented",
+    "changelog copy; the screen falls back to naming the running version and",
+    "saying plainly that its notes have not been recorded. Add entries here."
+  ],
+  "releases": []
+}

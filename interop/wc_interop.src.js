@@ -1,14 +1,12 @@
 /*
  * GeoSafe WalletConnect interop glue for the Flutter web build.
  *
- * Bundles @reown/appkit (the SAME JS AppKit the React app uses) and exposes a
- * tiny imperative API on window.GeoSafeWC that the Flutter/Dart web target
- * drives via dart:js_interop. This gives the Flutter web build the exact modal
- * + connect/QR/extension behaviour of geosafe-web — the Dart reown_appkit SDK
- * is only used on the mobile builds.
- *
- * Mirrors geosafe-web's walletConnect.ts (createAppKit, ensureInit,
- * ensureConnected, verifyWalletPermission, sendTransaction).
+ * Bundles @reown/appkit and exposes a tiny imperative API on window.GeoSafeWC
+ * (createAppKit, ensureInit, ensureConnected, verifyWalletPermission,
+ * sendTransaction) that the Flutter/Dart web target drives via
+ * dart:js_interop. This gives the Flutter web build the JS AppKit's modal +
+ * connect/QR/extension behaviour — the Dart reown_appkit SDK is only used on
+ * the mobile builds.
  *
  * Build (self-contained — deps pinned in this dir's package.json):
  *   cd web/interop && npm ci && npm run build   # → ../wc_interop.js
@@ -323,6 +321,34 @@ const api = {
         targetChainId: cfg && cfg.defaultChainId,
         raw,
       });
+    }
+  },
+
+  // EIP-747 wallet_watchAsset — ask the wallet to display an ERC20 (a shadow
+  // token, so the user sees their vault as a normal balance).
+  //
+  // Envelope: {"ok":true,"added":bool} or {"ok":false,"error":...,"code":...}.
+  // Note the params shape: EIP-747 passes an OBJECT, not the array every other
+  // JSON-RPC method takes. MetaMask rejects the array form outright.
+  //
+  // A rejection ("no thanks") and an unsupported method are the SAME
+  // non-outcome as far as the app is concerned — both come back ok:false and
+  // nothing about the shadow stops working. Never throw here.
+  async watchAsset(address, symbol, decimals) {
+    try {
+      await ensureInit();
+      await ensureConnected();
+      const wp = appKit.getWalletProvider();
+      if (!wp) return JSON.stringify({ ok: false, error: 'Wallet provider unavailable.' });
+      const added = await wp.request({
+        method: 'wallet_watchAsset',
+        params: { type: 'ERC20', options: { address, symbol, decimals: Number(decimals) } },
+      });
+      // Spec says the result is `true` when tracked. Some wallets answer with
+      // null/undefined on success, so only an explicit `false` is a decline.
+      return JSON.stringify({ ok: true, added: added !== false });
+    } catch (e) {
+      return JSON.stringify({ ok: false, error: errMsg(e), code: String((e && e.code) || '') });
     }
   },
 
